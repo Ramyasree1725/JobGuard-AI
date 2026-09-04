@@ -1,0 +1,15 @@
+[run]
+branch = True
+source =
+    core
+    backend
+
+omit =
+    tests/*
+    venv/*
+    .git/*
+
+[report]
+show_missing = True
+skip_covered = False
+fail_under = 80

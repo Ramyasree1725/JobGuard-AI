@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobGuard AI - Online Job Fraud & Fake Offer Detection Platform</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fdf8f6',
+                            100: '#f4ede4',
+                            200: '#e8ded2',
+                            300: '#d7c4b0',
+                            500: '#b45309',
+                            600: '#92400e',
+                            700: '#78350f',
+                            800: '#622b0c',
+                            900: '#451a03',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Chart.js, Lucide Icons, PDF.js & Tesseract OCR CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script>
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+    </script>
+
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-[#f7f4ed] text-stone-800 min-h-screen flex flex-col selection:bg-amber-800 selection:text-white transition-colors duration-200">
+
+    <!-- Top Live Scam Alert Marquee Ticker -->
+    <div class="bg-amber-950 text-amber-100 text-[11px] py-1.5 px-4 border-b border-amber-900/40 select-none overflow-hidden relative z-50 shadow-xs">
+        <div class="max-w-7xl mx-auto flex items-center gap-3">
+            <div class="flex items-center gap-1.5 shrink-0 bg-rose-600 text-white px-2 py-0.5 rounded-md font-bold text-[10px] uppercase tracking-wider shadow-xs">
+                <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping inline-block"></span>
+                <span data-i18n="ticker_badge">LIVE SCAM RADAR</span>
+            </div>
+            <div class="overflow-hidden whitespace-nowrap flex-1 relative">
+                <div class="inline-block animate-marquee font-mono text-[11px] text-amber-200/95 cursor-pointer" onclick="document.querySelector('[data-target=\'tab-scambook\']')?.click()">
+                    🔴 <strong>TRENDING SCAM:</strong> WhatsApp "YouTube Like & Rating" VIP task scams surged +42% today (USDT crypto deposit traps) &nbsp;&nbsp;•&nbsp;&nbsp; ⚠️ <strong>BLACKLISTED DOMAIN:</strong> Fake portal <code>careers-amazon-review-portal.site</code> flagged &nbsp;&nbsp;•&nbsp;&nbsp; 🚨 <strong>EQUIPMENT FRAUD:</strong> Counterfeit $3,850 Cashier Check scams actively targeting remote data entry candidates &nbsp;&nbsp;•&nbsp;&nbsp; 🛡️ <strong>CYBER CRIME HELPLINE:</strong> Call 1930 (India) or report at cybercrime.gov.in immediately.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar (with Smooth Scrollable Nav Tabs) -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#e8dfd2] shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+            <!-- 1. Left: Brand Logo & Clean Aligned Typography -->
+            <div class="flex items-center gap-3 cursor-pointer select-none group shrink-0" onclick="document.querySelector('[data-target=\'tab-scanner\']')?.click()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-800 via-amber-700 to-amber-600 flex items-center justify-center shadow-md shadow-amber-900/20 shrink-0 group-hover:scale-105 transition-transform">
+                    <i data-lucide="shield-alert" class="w-5 h-5 text-white"></i>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <div class="flex items-center gap-1.5 leading-none">
+                        <span class="font-extrabold text-lg tracking-tight text-stone-900 leading-none">JobGuard<span class="text-amber-800 font-black">AI</span></span>
+                        <span class="inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold rounded-md bg-amber-50 text-amber-800 border border-amber-200 leading-none">v2.5</span>
+                    </div>
+                    <span class="text-[11px] font-medium text-stone-500 leading-tight mt-1" data-i18n="tagline">Online Job Scam & Fraud Detection</span>
+                </div>
+            </div>
+
+            <!-- 2. Center: Scrollable Desktop Navigation Tabs Container with Scroll Controls -->
+            <div class="hidden lg:flex items-center flex-1 max-w-2xl mx-2 relative group/nav">
+                <!-- Left Scroll Arrow -->
+                <button type="button" onclick="scrollNavMenu(-200)" class="p-1.5 rounded-lg bg-white/90 hover:bg-amber-100 text-stone-600 hover:text-amber-900 border border-[#e8dfd2] mr-1 shrink-0 transition-all shadow-xs cursor-pointer" title="Scroll Left">
+                    <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+                </button>
+
+                <!-- Scrollable Tabs List -->
+                <nav id="main-nav-tabs" class="flex items-center gap-1 overflow-x-auto scrollbar-none py-1 px-1 bg-[#f2eee6] rounded-xl border border-[#e8dfd2] text-xs shadow-2xs scroll-smooth flex-1">
+                    <button data-target="tab-scanner" class="nav-tab-btn active px-3 py-1.5 rounded-lg font-semibold transition-all bg-amber-800 text-white flex items-center gap-1.5 shadow-xs whitespace-nowrap shrink-0">
+                        <i data-lucide="scan-search" class="w-4 h-4 shrink-0"></i>
+                        <span data-i18n="nav_scanner">Job Scanner</span>
+                    </button>
+                    <button data-target="tab-offer" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <i data-lucide="file-check-2" class="w-4 h-4 shrink-0"></i>
+                        <span data-i18n="nav_offer">Offer Auditor</span>
+                    </button>
+                    <button data-target="tab-salary" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <i data-lucide="badge-dollar-sign" class="w-4 h-4 shrink-0"></i>
+                        <span data-i18n="nav_salary">Salary Checker</span>
+                    </button>
+                    <button data-target="tab-recruiter" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <i data-lucide="user-check" class="w-4 h-4 shrink-0"></i>
+                        <span data-i18n="nav_recruiter">Recruiter Check</span>
+                    </button>
+                    <button data-target="tab-quiz" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <i data-lucide="help-circle" class="w-4 h-4 shrink-0"></i>
+                        <span data-i18n="nav_quiz">60s Scam Quiz</span>
+                    </button>
+                    <button data-target="tab-lookup" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <i data-lucide="phone-call" class="w-4 h-4 shrink-0"></i>
+                        <span data-i18n="nav_lookup">Phone/UPI Lookup</span>
+                    </button>
+                    <button data-target="tab-complaint" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <i data-lucide="file-warning" class="w-4 h-4 shrink-0"></i>
+                        <span data-i18n="nav_complaint">Cyber Complaint</span>
+                    </button>
+                    <button data-target="tab-scambook" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <i data-lucide="shield-ban" class="w-4 h-4 shrink-0"></i>
+                        <span data-i18n="nav_scam_db">Scam Database</span>
+                    </button>
+                    <button data-target="tab-report" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <i data-lucide="megaphone" class="w-4 h-4 shrink-0"></i>
+                        <span data-i18n="nav_report">Report Scam</span>
+                    </button>
+                    <button data-target="tab-history" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <i data-lucide="clipboard-list" class="w-4 h-4 shrink-0"></i>
+                        <span data-i18n="nav_history">My History</span>
+                    </button>
+                </nav>
+
+                <!-- Right Scroll Arrow -->
+                <button type="button" onclick="scrollNavMenu(200)" class="p-1.5 rounded-lg bg-white/90 hover:bg-amber-100 text-stone-600 hover:text-amber-900 border border-[#e8dfd2] ml-1 shrink-0 transition-all shadow-xs cursor-pointer" title="Scroll Right">
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </button>
+            </div>
+
+            <!-- 3. Right: Grouped Utility Controls -->
+            <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+                <!-- Single Languages Dropdown Button -->
+                <div class="relative inline-block text-left" id="lang-dropdown-wrapper">
+                    <button id="btn-language-toggle" type="button" class="h-9 flex items-center gap-1.5 px-3 rounded-xl bg-[#f2eee6] hover:bg-[#e8dfd2] text-stone-700 text-xs font-semibold border border-[#e8dfd2] shadow-xs transition-all">
+                        <i data-lucide="globe" class="w-4 h-4 text-amber-800 shrink-0"></i>
+                        <span id="current-lang-label">Languages</span>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-stone-400 shrink-0"></i>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="lang-dropdown-menu" class="hidden absolute right-0 mt-2 w-36 rounded-xl bg-white border border-[#e8dfd2] shadow-lg p-1.5 space-y-0.5 z-50 text-xs animate-fade-in">
+                        <button type="button" onclick="selectLanguage('en')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 font-medium transition-all text-stone-700">
+                            <span>🇺🇸 English</span>
+                            <i data-lucide="check" class="w-3.5 h-3.5 text-amber-800" id="check-lang-en"></i>
+                        </button>
+                        <button type="button" onclick="selectLanguage('te')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 font-medium transition-all text-stone-700">
+                            <span>🇮🇳 తెలుగు</span>
+                            <i data-lucide="check" class="w-3.5 h-3.5 text-amber-800 hidden" id="check-lang-te"></i>
+                        </button>
+                        <button type="button" onclick="selectLanguage('hi')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 font-medium transition-all text-stone-700">
+                            <span>🇮🇳 हिन्दी</span>
+                            <i data-lucide="check" class="w-3.5 h-3.5 text-amber-800 hidden" id="check-lang-hi"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Theme Toggle -->
+                <button id="btn-theme-toggle" class="w-9 h-9 flex items-center justify-center rounded-xl text-stone-500 hover:text-stone-800 hover:bg-[#f2eee6] border border-[#e8dfd2] transition-all" title="Toggle Light / Dark Mode">
+                    <i data-lucide="moon" id="theme-icon" class="w-4 h-4"></i>
+                </button>
+
+                <!-- Auth Buttons (Guest vs Signed In) -->
+                <div id="auth-guest-controls">
+                    <button id="btn-open-auth" class="h-9 px-3.5 rounded-xl text-xs font-bold bg-amber-800 hover:bg-amber-900 text-white shadow-xs flex items-center gap-1.5 transition-all">
+                        <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                        <span data-i18n="btn_signin">Sign In / Register</span>
+                    </button>
+                </div>
+
+                <div id="auth-user-controls" class="hidden items-center gap-1.5">
+                    <div class="h-9 flex items-center gap-2 bg-[#f2eee6] border border-[#e8dfd2] px-2.5 rounded-xl">
+                        <div class="w-5 h-5 rounded-full bg-amber-800 text-white font-bold text-[9px] flex items-center justify-center shrink-0" id="user-avatar-initials">
+                            U
+                        </div>
+                        <div class="text-left hidden sm:block">
+                            <span id="user-display-name" class="block text-xs font-bold text-stone-800 leading-none truncate max-w-[90px]">User</span>
+                            <span id="user-display-role" class="text-[9px] text-stone-500 leading-none">Candidate</span>
+                        </div>
+                    </div>
+                    <button id="btn-logout" class="w-9 h-9 flex items-center justify-center rounded-xl text-rose-600 hover:bg-rose-50 border border-rose-200 transition-all" title="Sign Out">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scrollable Tab Strip for Tablets & Mobile Screens (< lg) -->
+        <div id="mobile-nav-tabs" class="flex lg:hidden overflow-x-auto py-2 px-4 bg-[#faf7f0] border-t border-[#e8dfd2] scrollbar-none items-center gap-1.5 text-xs scroll-smooth">
+            <button data-target="tab-scanner" class="nav-tab-btn active px-3 py-1.5 rounded-lg font-semibold transition-all bg-amber-800 text-white flex items-center gap-1.5 shadow-xs whitespace-nowrap shrink-0">
+                <i data-lucide="scan-search" class="w-3.5 h-3.5"></i>
+                <span data-i18n="nav_scanner">Job Scanner</span>
+            </button>
+            <button data-target="tab-offer" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                <i data-lucide="file-check-2" class="w-3.5 h-3.5"></i>
+                <span data-i18n="nav_offer">Offer Auditor</span>
+            </button>
+            <button data-target="tab-salary" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                <i data-lucide="badge-dollar-sign" class="w-3.5 h-3.5"></i>
+                <span data-i18n="nav_salary">Salary Checker</span>
+            </button>
+            <button data-target="tab-recruiter" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                <span data-i18n="nav_recruiter">Recruiter Check</span>
+            </button>
+            <button data-target="tab-quiz" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+                <span data-i18n="nav_quiz">60s Scam Quiz</span>
+            </button>
+            <button data-target="tab-lookup" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
+                <span data-i18n="nav_lookup">Phone/UPI Lookup</span>
+            </button>
+            <button data-target="tab-complaint" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                <i data-lucide="file-warning" class="w-3.5 h-3.5"></i>
+                <span data-i18n="nav_complaint">Cyber Complaint</span>
+            </button>
+            <button data-target="tab-scambook" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                <i data-lucide="shield-ban" class="w-3.5 h-3.5"></i>
+                <span data-i18n="nav_scam_db">Scam Database</span>
+            </button>
+            <button data-target="tab-report" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                <i data-lucide="megaphone" class="w-3.5 h-3.5"></i>
+                <span data-i18n="nav_report">Report Scam</span>
+            </button>
+            <button data-target="tab-history" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold text-stone-600 hover:text-stone-900 hover:bg-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
+                <span data-i18n="nav_history">My History</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- ================= TAB: AUTHENTICATION / LOGIN / REGISTER ================= -->
+        <section id="tab-auth" class="tab-section hidden max-w-md mx-auto space-y-6">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#e8dfd2] shadow-md space-y-6">
+                <!-- Auth Toggle Header -->
+                <div class="text-center space-y-2">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 flex items-center justify-center mx-auto shadow-sm">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                    <h2 id="auth-form-title" class="text-2xl font-extrabold text-stone-900">Welcome to JobGuard AI</h2>
+                    <p id="auth-form-subtitle" class="text-xs text-stone-500">Sign in to save your scam audit history and protect your career search.</p>
+                </div>
+
+                <!-- Tabs: Sign In / Register -->
+                <div class="flex bg-[#f2eee6] p-1 rounded-xl border border-[#e8dfd2]">
+                    <button type="button" id="tab-btn-login" class="flex-1 py-1.5 rounded-lg text-xs font-bold bg-white text-amber-800 shadow-sm transition-all">
+                        Sign In
+                    </button>
+                    <button type="button" id="tab-btn-register" class="flex-1 py-1.5 rounded-lg text-xs font-semibold text-stone-500 hover:text-stone-800 transition-all">
+                        Create Account
+                    </button>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <form id="form-login" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Email Address</label>
+                        <input type="email" id="login-email" required placeholder="you@example.com" class="w-full bg-white border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:ring-2 focus:ring-amber-100 focus:outline-none">
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-semibold text-stone-700">Password</label>
+                            <a href="#" onclick="alert('Password reset link sent to your email (simulated)'); return false;" class="text-[11px] text-amber-800 hover:underline">Forgot password?</a>
+                        </div>
+                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-white border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:ring-2 focus:ring-amber-100 focus:outline-none">
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="login-remember" checked class="w-4 h-4 rounded text-amber-800 focus:ring-amber-700 border-[#e8dfd2]">
+                        <label for="login-remember" class="text-xs text-stone-600 cursor-pointer">Remember my session</label>
+                    </div>
+
+                    <button type="submit" class="w-full py-2.5 rounded-xl text-xs font-bold bg-amber-800 hover:bg-amber-900 text-white shadow-sm flex items-center justify-center gap-2 transition-all">
+                        <i data-lucide="log-in" class="w-4 h-4"></i>
+                        <span>Sign In to Account</span>
+                    </button>
+
+                    <!-- Quick Demo Logins -->
+                    <div class="pt-3 border-t border-[#e8dfd2] text-center space-y-2">
+                        <span class="text-[11px] text-stone-400 block font-medium">Or Quick Demo Login:</span>
+                        <div class="flex items-center gap-2 justify-center">
+                            <button type="button" onclick="loginDemoUser('Ramya Sri', 'Candidate / Job Seeker')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#f2eee6] hover:bg-[#e8dfd2] text-stone-700 border border-[#e8dfd2] transition-all">
+                                👤 Candidate Demo
+                            </button>
+                            <button type="button" onclick="loginDemoUser('Alex Investigator', 'Cyber Fraud Investigator')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#f2eee6] hover:bg-[#e8dfd2] text-stone-700 border border-[#e8dfd2] transition-all">
+                                🛡️ Investigator Demo
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="form-register" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Full Name</label>
+                        <input type="text" id="reg-name" required placeholder="e.g. Ramya Sri" class="w-full bg-white border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:ring-2 focus:ring-amber-100 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Email Address</label>
+                        <input type="email" id="reg-email" required placeholder="you@example.com" class="w-full bg-white border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:ring-2 focus:ring-amber-100 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Account Role</label>
+                        <select id="reg-role" class="w-full bg-white border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 focus:border-amber-700 focus:outline-none">
+                            <option value="Job Seeker / Candidate">🎓 Job Seeker / Candidate</option>
+                            <option value="HR Recruiter">💼 Verified HR Recruiter</option>
+                            <option value="Cyber Fraud Investigator">🛡️ Cyber Fraud Investigator</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Create Password</label>
+                        <input type="password" id="reg-password" required placeholder="Minimum 6 characters" class="w-full bg-white border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Confirm Password</label>
+                        <input type="password" id="reg-password-confirm" required placeholder="Re-type password" class="w-full bg-white border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                    </div>
+
+                    <button type="submit" class="w-full py-2.5 rounded-xl text-xs font-bold bg-amber-800 hover:bg-amber-900 text-white shadow-sm flex items-center justify-center gap-2 transition-all">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                        <span>Register & Create Account</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= TAB 1: JOB POST SCANNER (WITH SCREENSHOT OCR) ================= -->
+        <section id="tab-scanner" class="tab-section space-y-8">
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-2xl p-6 sm:p-8 bg-white border border-[#e8dfd2] shadow-sm glow-primary">
+                <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-amber-50 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="max-w-3xl space-y-3">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-indicator"></span>
+                        <span data-i18n="hero_badge">AI Heuristics & 150+ Scam Pattern Detection Active</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-stone-900">
+                        <span data-i18n="hero_title_1">Detect Fake Job Postings & </span><span class="gradient-text" data-i18n="hero_title_2">Employment Scams</span>
+                    </h1>
+                    <p class="text-sm sm:text-base text-stone-600 leading-relaxed" data-i18n="hero_desc">
+                        Paste suspicious job descriptions, upload WhatsApp/Telegram chat screenshots (OCR), or check salary realism.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Input & Config Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Input Form (7 cols) -->
+                <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-[#e8dfd2] shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b border-[#e8dfd2] pb-3 flex-wrap gap-2">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="file-text" class="w-5 h-5 text-amber-800"></i>
+                            <h2 class="font-bold text-sm text-stone-800" data-i18n="form_title">Job Posting Details</h2>
+                        </div>
+                        <!-- Sample Loader -->
+                        <div class="w-56">
+                            <select id="sample-job-select" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] text-stone-700 text-xs rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-amber-700 focus:outline-none">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- WhatsApp / Telegram Screenshot OCR Upload Box -->
+                    <div id="ocr-drop-box" class="border border-dashed border-amber-300 hover:border-amber-700 rounded-xl p-3 text-center bg-amber-50/50 hover:bg-amber-50 cursor-pointer transition-all flex items-center justify-between gap-3 group">
+                        <div class="flex items-center gap-3 text-left">
+                            <div class="w-9 h-9 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+                                <i data-lucide="image" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-stone-800" data-i18n="ocr_title">📸 Upload WhatsApp / Telegram Chat Screenshot (OCR Scan)</p>
+                                <p class="text-[11px] text-stone-500" data-i18n="ocr_desc">Upload PNG/JPG photo to automatically extract chat text</p>
+                            </div>
+                        </div>
+                        <span id="ocr-status-pill" class="text-[10px] px-2.5 py-1 rounded-lg bg-amber-800 text-white font-bold shrink-0">Upload Photo</span>
+                        <input type="file" id="ocr-file-input" accept="image/*" class="hidden">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1" data-i18n="label_job_title">Job Title</label>
+                            <input type="text" id="job-title" placeholder="e.g. Remote Data Entry Clerk" class="w-full bg-[#f7f4ed]/50 border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:ring-2 focus:ring-amber-100 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1" data-i18n="label_company">Company Name</label>
+                            <input type="text" id="job-company" placeholder="e.g. Apex Global Logistics" class="w-full bg-[#f7f4ed]/50 border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:ring-2 focus:ring-amber-100 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1" data-i18n="label_salary">Offered Salary / Rate</label>
+                            <input type="text" id="job-salary" placeholder="e.g. $45/hr or $2,000/wk" class="w-full bg-[#f7f4ed]/50 border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:ring-2 focus:ring-amber-100 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1" data-i18n="label_email">Contact Email</label>
+                            <input type="email" id="job-email" placeholder="e.g. recruiter@gmail.com" class="w-full bg-[#f7f4ed]/50 border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:ring-2 focus:ring-amber-100 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1" data-i18n="label_website">Company Website</label>
+                            <input type="text" id="job-website" placeholder="e.g. www.apexlogistics.com" class="w-full bg-[#f7f4ed]/50 border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:ring-2 focus:ring-amber-100 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1" data-i18n="label_desc">Job Description or Recruitment Message <span class="text-rose-500">*</span></label>
+                        <textarea id="job-description" rows="7" placeholder="Paste the full job posting, email text, WhatsApp/Telegram message, or recruiter chat here..." class="w-full bg-[#f7f4ed]/50 border border-[#e8dfd2] rounded-xl p-3.5 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:ring-2 focus:ring-amber-100 focus:outline-none leading-relaxed"></textarea>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="btn-clear-job" class="px-4 py-2 rounded-xl text-xs font-semibold text-stone-500 hover:text-stone-800 hover:bg-[#f2eee6] transition-all" data-i18n="btn_clear">
+                                Clear Fields
+                            </button>
+                            <span id="scan-remaining-badge" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 text-[11px] font-semibold border border-amber-200/80">
+                                <i data-lucide="zap" class="w-3 h-3 text-amber-700"></i>
+                                <span id="scan-remaining-text">2 Free AI Scans Remaining</span>
+                            </span>
+                        </div>
+                        <button type="button" id="btn-scan-job" class="px-6 py-2.5 rounded-xl text-xs font-bold bg-amber-800 hover:bg-amber-900 text-white shadow-sm flex items-center justify-center gap-2 transition-all">
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                            <span data-i18n="btn_run_scan">Run AI Scam Verification</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Quick Safety Checklist (5 cols) -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="bg-white rounded-2xl p-5 border border-[#e8dfd2] shadow-sm space-y-3">
+                        <div class="flex items-center gap-2 border-b border-[#e8dfd2] pb-2">
+                            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-700"></i>
+                            <h3 class="text-xs font-bold text-stone-800 uppercase tracking-wider" data-i18n="red_flags_title">Top 5 Red Flags of Online Job Scams</h3>
+                        </div>
+                        <ul class="space-y-2.5 text-xs text-stone-600">
+                            <li class="flex items-start gap-2">
+                                <span class="text-rose-600 font-bold">1.</span>
+                                <span><strong>Upfront Fees:</strong> Asking for registration fees, training materials, or ID card charges.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-rose-600 font-bold">2.</span>
+                                <span><strong>Check / Wire Scams:</strong> Sending you a check to purchase equipment from their "vendor".</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-rose-600 font-bold">3.</span>
+                                <span><strong>Chat Only Hiring:</strong> Hiring you exclusively through Telegram or WhatsApp without video calls.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-rose-600 font-bold">4.</span>
+                                <span><strong>Unrealistic Pay:</strong> Offering $50+/hr for simple data entry, typing, or rating videos.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-rose-600 font-bold">5.</span>
+                                <span><strong>Free Email Domains:</strong> Claiming to represent Google or Amazon from a @gmail.com or @yahoo.com address.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-5 border border-[#e8dfd2] shadow-sm space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-stone-800">Need Instant Help?</h4>
+                            <span class="text-[10px] px-2 py-0.5 rounded bg-amber-50 text-amber-800 font-medium">Free Community Tool</span>
+                        </div>
+                        <p class="text-xs text-stone-500 leading-relaxed">
+                            If an employer threatens you or you already transferred money, immediately contact your bank and file an official complaint with your national cybercrime helpline (1930 in India / ic3.gov in US).
+                        </p>
+                    </div>
+
+                    <!-- COMPACT FREE TIER CARD (Shown before taking Pro) -->
+                    <div id="side-free-card" class="bg-white rounded-2xl p-4 border border-[#e8dfd2] shadow-xs space-y-2.5 transition-all">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 flex items-center justify-center shrink-0">
+                                    <i data-lucide="zap" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-stone-800">JobGuard Free Tier</h4>
+                                    <span id="free-card-scans-left" class="text-[10px] text-stone-500 font-medium">2 of 2 Free Checks Left</span>
+                                </div>
+                            </div>
+                            <span id="free-card-tag" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 border border-amber-200">2 Free</span>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-2 pt-2 border-t border-[#f2eee6]">
+                            <span class="text-[11px] text-stone-500 truncate">Want unlimited checks & OCR?</span>
+                            <button type="button" onclick="openSubscriptionModal()" class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-amber-800 hover:bg-amber-900 text-white shadow-xs flex items-center gap-1.5 shrink-0 transition-all cursor-pointer">
+                                <i data-lucide="crown" class="w-3.5 h-3.5 text-yellow-300"></i>
+                                <span>Get Pro</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- FULL PRO MEMBER STATUS CARD (Shown after taking Pro) -->
+                    <div id="side-pro-card" class="hidden rounded-2xl p-5 border border-amber-800/40 transition-all duration-300 relative overflow-hidden bg-gradient-to-br from-amber-900 via-amber-800 to-amber-950 text-white shadow-md space-y-3.5">
+                        <!-- Ambient Glow -->
+                        <div class="absolute -right-6 -bottom-6 w-36 h-36 bg-amber-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+                        <div class="flex items-center justify-between relative z-10">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-xl bg-amber-700/60 border border-amber-500/40 flex items-center justify-center text-yellow-300 shadow-xs shrink-0">
+                                    <i data-lucide="crown" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h4 id="side-pro-title" class="text-xs font-extrabold tracking-tight text-white flex items-center gap-1.5">
+                                        <span>Pro Member Status</span>
+                                        <span id="side-pro-badge" class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-yellow-400 text-amber-950">UNLIMITED</span>
+                                    </h4>
+                                    <span id="side-pro-sub" class="text-[10px] text-amber-200/90 block font-medium">Unlimited AI Scam Verifications</span>
+                                </div>
+                            </div>
+                            <span id="side-pro-tag" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-200 border border-emerald-400/40 font-bold">Pro Active</span>
+                        </div>
+
+                        <!-- Pro Benefits List -->
+                        <ul class="space-y-2 text-[11px] text-amber-100/95 relative z-10">
+                            <li class="flex items-center gap-2">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-yellow-300 shrink-0"></i>
+                                <span>Unlimited Job Posting & WhatsApp OCR Scans</span>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-yellow-300 shrink-0"></i>
+                                <span>Multi-File & Folder Offer Letter Batch Auditor</span>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-yellow-300 shrink-0"></i>
+                                <span>Instant Cyber Police Complaint Drafts (1930 / Legal)</span>
+                            </li>
+                        </ul>
+
+                        <!-- CTA / Status Action Row -->
+                        <div class="relative z-10 pt-2.5 border-t border-amber-700/60 flex items-center justify-between gap-2">
+                            <span id="side-pro-status-text" class="text-[11px] font-bold text-amber-200 flex items-center gap-1">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-300"></i>
+                                <span>Unlimited AI Access Active</span>
+                            </span>
+                            <button id="btn-side-pro-action" type="button" onclick="openSubscriptionModal()" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-gradient-to-r from-yellow-400 to-amber-300 hover:from-yellow-300 hover:to-amber-200 text-amber-950 shadow-sm flex items-center gap-1.5 transition-all cursor-pointer">
+                                <span id="side-pro-btn-text">Manage Plan</span>
+                                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= SCAN RESULTS PANEL ================= -->
+            <div id="scan-results-panel" class="hidden bg-white rounded-2xl p-6 sm:p-8 border border-[#e8dfd2] shadow-md space-y-6">
+                <!-- Header / Verdict Bar -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#e8dfd2] pb-6">
+                    <div>
+                        <div id="result-verdict-badge" class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+                            <!-- Injected -->
+                        </div>
+                        <h3 id="result-verdict-title" class="text-2xl font-extrabold text-stone-900">Analysis Verdict</h3>
+                        <p id="result-summary-desc" class="text-xs sm:text-sm text-stone-600 mt-1 max-w-2xl">Summary description</p>
+                    </div>
+
+                    <div class="flex sm:flex-col items-center sm:items-end justify-between gap-2 bg-[#f7f4ed] p-4 rounded-xl border border-[#e8dfd2] min-w-[160px]">
+                        <span class="text-[10px] font-bold text-stone-500 uppercase tracking-wider">Fraud Risk Probability</span>
+                        <div id="result-score-val" class="text-4xl font-extrabold text-rose-600">0%</div>
+                        <div class="w-full bg-[#e8dfd2] rounded-full h-2 overflow-hidden mt-1">
+                            <div id="result-score-progress" class="h-full bg-rose-600 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3-Column Diagnostic Details -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Column 1: Detected Red Flags (5 cols) -->
+                    <div class="lg:col-span-5 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-rose-600 flex items-center gap-1.5">
+                                <i data-lucide="alert-octagon" class="w-4 h-4"></i>
+                                <span>Detected Risk Signals</span>
+                            </h4>
+                        </div>
+                        <div id="red-flags-container" class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                            <!-- Injected -->
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Risk Breakdown Radar (4 cols) -->
+                    <div class="lg:col-span-4 bg-[#f7f4ed] rounded-xl p-4 border border-[#e8dfd2] flex flex-col items-center justify-between">
+                        <h4 class="text-xs font-bold text-stone-700 uppercase tracking-wider mb-2">Threat Vector Distribution</h4>
+                        <div class="w-full h-56 relative flex items-center justify-center">
+                            <canvas id="risk-radar-chart"></canvas>
+                        </div>
+                        <div class="w-full border-t border-[#e8dfd2] pt-3 mt-2">
+                            <div id="safe-flags-container" class="space-y-1.5">
+                                <!-- Safe points -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Actionable Candidate Guidance (3 cols) -->
+                    <div class="lg:col-span-3 bg-[#f7f4ed] rounded-xl p-4 border border-[#e8dfd2] space-y-3">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
+                            <i data-lucide="lightbulb" class="w-4 h-4 text-amber-700"></i>
+                            <span>Recommended Steps</span>
+                        </h4>
+                        <ul id="advice-container" class="space-y-2.5">
+                            <!-- Advice items -->
+                        </ul>
+                        <div class="pt-4 border-t border-[#e8dfd2] space-y-2">
+                            <button onclick="exportAnalysisReport()" class="w-full py-2 rounded-lg text-xs font-bold bg-white hover:bg-[#f2eee6] text-stone-700 border border-[#e8dfd2] flex items-center justify-center gap-1.5 transition-all shadow-sm">
+                                <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                                <span>Export / Print Report</span>
+                            </button>
+                            <button onclick="document.querySelector('[data-target=\'tab-complaint\']')?.click()" class="w-full py-2 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 flex items-center justify-center gap-1.5 transition-all">
+                                <i data-lucide="file-warning" class="w-3.5 h-3.5"></i>
+                                <span>Generate Police Complaint</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: OFFER LETTER AUDITOR (FILE & FOLDER UPLOAD) ================= -->
+        <section id="tab-offer" class="tab-section hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#e8dfd2] shadow-sm space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#e8dfd2] pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-stone-900 flex items-center gap-2">
+                            <i data-lucide="file-check-2" class="w-5 h-5 text-amber-800"></i>
+                            <span>Employment Offer Letter & Contract Auditor</span>
+                        </h2>
+                        <p class="text-xs text-stone-500 mt-1">
+                            Upload a PDF file, entire folder of offers, or paste text to scan for counterfeit equipment check clauses and fee demands.
+                        </p>
+                    </div>
+                    <div class="w-64">
+                        <select id="sample-offer-select" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] text-stone-700 text-xs rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-amber-700 focus:outline-none">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Upload Area (Single File or Entire Folder) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Drop Zone -->
+                    <div id="offer-drop-zone" class="border-2 border-dashed border-[#e8dfd2] hover:border-amber-700 rounded-2xl p-6 text-center cursor-pointer transition-all bg-[#f7f4ed]/60 hover:bg-amber-50/60 flex flex-col items-center justify-center gap-2 group">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 group-hover:bg-amber-200 text-amber-800 flex items-center justify-center transition-all">
+                            <i data-lucide="upload-cloud" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-stone-800">Drag & Drop Offer Letter (PDF, TXT, DOCX)</p>
+                            <p class="text-[11px] text-stone-500 mt-0.5">or click to browse file from your computer</p>
+                        </div>
+                        <input type="file" id="offer-file-input" accept=".pdf,.txt,.docx,.doc,.rtf" class="hidden">
+                    </div>
+
+                    <!-- Folder Upload Zone -->
+                    <div id="offer-folder-zone" class="border-2 border-dashed border-[#e8dfd2] hover:border-amber-900 rounded-2xl p-6 text-center cursor-pointer transition-all bg-[#f7f4ed]/60 hover:bg-amber-50/60 flex flex-col items-center justify-center gap-2 group">
+                        <div class="w-12 h-12 rounded-xl bg-[#eaddd7] group-hover:bg-[#d7c4b0] text-amber-900 flex items-center justify-center transition-all">
+                            <i data-lucide="folder-up" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-stone-800">Upload Entire Offer Letters Folder</p>
+                            <p class="text-[11px] text-stone-500 mt-0.5">Select a directory to batch-scan multiple offers</p>
+                        </div>
+                        <input type="file" id="offer-folder-input" webkitdirectory directory multiple class="hidden">
+                    </div>
+                </div>
+
+                <!-- Uploaded Folder / Batch File List (Hidden by default) -->
+                <div id="uploaded-files-panel" class="hidden bg-[#f7f4ed] rounded-xl p-4 border border-[#e8dfd2] space-y-3">
+                    <div class="flex items-center justify-between border-b border-[#e8dfd2] pb-2">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="folder-archive" class="w-4 h-4 text-amber-800"></i>
+                            <span class="text-xs font-bold text-stone-800">Uploaded Files / Folder Contents</span>
+                            <span id="uploaded-files-count" class="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-mono">0 files</span>
+                        </div>
+                        <button type="button" id="btn-batch-scan" class="px-3 py-1 rounded-lg text-xs font-bold bg-amber-800 hover:bg-amber-900 text-white flex items-center gap-1 transition-all shadow-sm">
+                            <i data-lucide="scan-line" class="w-3.5 h-3.5"></i>
+                            <span>Audit All Files</span>
+                        </button>
+                    </div>
+                    <div id="uploaded-files-list" class="max-h-48 overflow-y-auto space-y-1.5 pr-1 text-xs">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-semibold text-stone-700">Offer Letter / Appointment Document Text Content</label>
+                        <span id="active-file-indicator" class="text-[11px] text-amber-800 hidden font-mono"></span>
+                    </div>
+                    <textarea id="offer-text" rows="7" placeholder="Paste the offer letter clauses, terms, or upload a PDF / Folder above to auto-extract text..." class="w-full bg-[#f7f4ed]/50 border border-[#e8dfd2] rounded-xl p-3.5 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:ring-2 focus:ring-amber-100 focus:outline-none leading-relaxed"></textarea>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="btn-clear-offer" class="px-4 py-2 rounded-xl text-xs font-semibold text-stone-500 hover:text-stone-800 hover:bg-[#f2eee6] transition-all">
+                            Clear
+                        </button>
+                        <span id="offer-remaining-badge" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 text-[11px] font-semibold border border-amber-200/80">
+                            <i data-lucide="zap" class="w-3 h-3 text-amber-700"></i>
+                            <span id="offer-remaining-text">2 Free AI Scans Remaining</span>
+                        </span>
+                    </div>
+                    <button type="button" id="btn-audit-offer" class="px-6 py-2.5 rounded-xl text-xs font-bold bg-amber-800 hover:bg-amber-900 text-white shadow-sm flex items-center justify-center gap-2 transition-all">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        <span>Audit Selected Offer Letter</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Offer Audit Results -->
+            <div id="offer-results-panel" class="hidden bg-white rounded-2xl p-6 sm:p-8 border border-[#e8dfd2] shadow-sm space-y-6">
+                <!-- Header / Verdict Bar -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#e8dfd2] pb-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                            <span id="offer-status-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase"></span>
+                            <span id="offer-zero-risk-tag" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
+                                <i data-lucide="shield-check" class="w-3 h-3 text-emerald-700"></i>
+                                <span>Zero Risk Guarantee</span>
+                            </span>
+                        </div>
+                        <h3 id="offer-verdict-title" class="text-xl font-bold text-stone-900">Offer Letter Verification Summary</h3>
+                        <p id="offer-summary-desc" class="text-xs text-stone-600 mt-1 max-w-2xl leading-relaxed"></p>
+                    </div>
+                    <div class="flex sm:flex-col items-center sm:items-end justify-between gap-2 bg-[#f7f4ed] p-3.5 rounded-xl border border-[#e8dfd2] min-w-[160px]">
+                        <span class="text-[10px] font-bold text-stone-500 uppercase tracking-wider">Offer Fraud Risk</span>
+                        <div id="offer-score-val" class="text-3xl font-extrabold font-mono text-emerald-600">0% Risk</div>
+                        <div class="w-full bg-[#e8dfd2] rounded-full h-2 overflow-hidden mt-0.5">
+                            <div id="offer-score-progress" class="h-full bg-emerald-600 rounded-full transition-all duration-700" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comprehensive Multi-Vector Deep Research & Verification Checklist -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
+                            <i data-lucide="microscope" class="w-4 h-4 text-amber-700"></i>
+                            <span>Multi-Vector In-Depth Research & Verification Report</span>
+                        </h4>
+                        <span class="text-[10px] text-stone-500 font-medium font-mono">5 Vectors Audited</span>
+                    </div>
+                    <div id="offer-research-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- 2-Column Findings & Recommendations -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-3 border-t border-[#e8dfd2]">
+                    <div class="space-y-2.5">
+                        <h4 class="text-xs font-bold uppercase text-stone-800 flex items-center gap-1.5">
+                            <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-600"></i>
+                            <span>Identified Risk Signals & Traps</span>
+                        </h4>
+                        <div id="offer-findings-container" class="space-y-2.5"></div>
+                    </div>
+                    <div class="space-y-2.5">
+                        <h4 class="text-xs font-bold uppercase text-stone-800 flex items-center gap-1.5">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                            <span>Verified Safe Points & Candidate Guidance</span>
+                        </h4>
+                        <div id="offer-safe-points-container" class="space-y-1.5 mb-2"></div>
+                        <ul id="offer-tips-container" class="space-y-2"></ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB: SALARY SANITY & SCAM BAIT CALCULATOR ================= -->
+        <section id="tab-salary" class="tab-section hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#e8dfd2] shadow-sm space-y-5">
+                <div class="border-b border-[#e8dfd2] pb-4">
+                    <h2 class="text-xl font-bold text-stone-900 flex items-center gap-2">
+                        <i data-lucide="badge-dollar-sign" class="w-5 h-5 text-amber-800"></i>
+                        <span>Real Market vs Scam Bait Salary Sanity Evaluator</span>
+                    </h2>
+                    <p class="text-xs text-stone-500 mt-1">
+                        Scammers lure victims with absurdly high payouts for low-skill tasks (e.g. ₹60,000/mo or $45/hr for typing/liking videos). Check if your offered salary is realistic or a fraud trap.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Job Role / Designation</label>
+                        <select id="calc-role" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3 py-2 text-xs text-stone-800 focus:border-amber-700 focus:outline-none">
+                            <option value="data_entry">Data Entry / Typing Clerk</option>
+                            <option value="task_rating">YouTube/Product Task Rating</option>
+                            <option value="customer_support">Customer Support / Chat Agent</option>
+                            <option value="social_media">Social Media Assistant</option>
+                            <option value="content_writer">Junior Content Writer</option>
+                            <option value="software_dev">Junior Software Developer</option>
+                            <option value="graphic_designer">Junior Graphic Designer</option>
+                            <option value="package_handler">Package Reshipper / Handler</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Experience Level</label>
+                        <select id="calc-exp" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3 py-2 text-xs text-stone-800 focus:border-amber-700 focus:outline-none">
+                            <option value="fresher">Fresher (0 Years)</option>
+                            <option value="entry">Entry Level (1-2 Years)</option>
+                            <option value="mid">Mid Level (3-5 Years)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Work Commitment</label>
+                        <select id="calc-time" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3 py-2 text-xs text-stone-800 focus:border-amber-700 focus:outline-none">
+                            <option value="part_time">Part-Time (1-2 Hours/Day)</option>
+                            <option value="full_time">Full-Time (8 Hours/Day)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Offered Monthly Pay (₹ INR)</label>
+                        <input type="number" id="calc-offered-pay" placeholder="e.g. 50000" value="50000" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none font-mono">
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="button" id="btn-calc-salary" class="px-6 py-2.5 rounded-xl text-xs font-bold bg-amber-800 hover:bg-amber-900 text-white shadow-sm flex items-center gap-2 transition-all">
+                        <i data-lucide="calculator" class="w-4 h-4"></i>
+                        <span>Evaluate Salary Realism</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Calculation Output Card -->
+            <div id="salary-calc-result-panel" class="hidden bg-white rounded-2xl p-6 sm:p-8 border border-[#e8dfd2] shadow-sm space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#e8dfd2] pb-4">
+                    <div class="flex items-center gap-3">
+                        <span id="salary-verdict-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase"></span>
+                        <span id="salary-multiplier-val" class="text-xs font-mono font-bold text-stone-700"></span>
+                    </div>
+                </div>
+
+                <!-- Comparison Stats Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-xl bg-[#f7f4ed] border border-[#e8dfd2] space-y-1">
+                        <span class="text-[11px] text-stone-500 font-semibold block">Realistic Industry Standard Pay:</span>
+                        <span id="salary-real-range" class="text-lg font-bold text-emerald-700 font-mono"></span>
+                        <p class="text-[11px] text-stone-500">Based on verified job market compensation benchmarks.</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-[#f7f4ed] border border-[#e8dfd2] space-y-1">
+                        <span class="text-[11px] text-stone-500 font-semibold block">Your Offered Rate:</span>
+                        <span id="salary-offered-val" class="text-lg font-bold text-rose-700 font-mono"></span>
+                        <p id="salary-deviation-text" class="text-[11px] font-semibold"></p>
+                    </div>
+                </div>
+
+                <!-- Detailed Analysis & Warning -->
+                <div id="salary-analysis-box" class="p-4 rounded-xl border text-xs leading-relaxed space-y-2">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: SCAMMER PHONE / UPI LOOKUP ================= -->
+        <section id="tab-lookup" class="tab-section hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#e8dfd2] shadow-sm space-y-5">
+                <div class="border-b border-[#e8dfd2] pb-4">
+                    <h2 class="text-xl font-bold text-stone-900 flex items-center gap-2">
+                        <i data-lucide="phone-call" class="w-5 h-5 text-amber-800"></i>
+                        <span>Scammer Phone Number, Telegram Handle & UPI ID Lookup</span>
+                    </h2>
+                    <p class="text-xs text-stone-500 mt-1">
+                        Search suspected phone numbers (+91, +1), Telegram usernames (@username), or UPI Payment IDs (e.g. user@paytm, name@okhdfcbank) to verify against our fraud blacklist.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                    <div class="sm:col-span-8">
+                        <input type="text" id="lookup-query-input" placeholder="e.g. +91 98765 43210 or @Nexus_VIP_Mentor or hr.pay@upi" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-4 py-2.5 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:ring-2 focus:ring-amber-100 focus:outline-none">
+                    </div>
+                    <div class="sm:col-span-4 flex gap-2">
+                        <button type="button" id="btn-run-lookup" class="w-full py-2.5 rounded-xl text-xs font-bold bg-amber-800 hover:bg-amber-900 text-white shadow-sm flex items-center justify-center gap-1.5 transition-all">
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                            <span>Check Blacklist</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Samples -->
+                <div class="flex items-center gap-2 flex-wrap text-xs">
+                    <span class="text-stone-400 text-[11px]">Try searching:</span>
+                    <button type="button" onclick="searchLookupNumber('+91 98765-43210')" class="px-2.5 py-1 rounded bg-[#f2eee6] text-stone-700 hover:bg-[#e8dfd2] border border-[#e8dfd2] text-[11px] font-mono">+91 98765-43210 (WhatsApp Scam)</button>
+                    <button type="button" onclick="searchLookupNumber('@Nexus_VIP_Mentor')" class="px-2.5 py-1 rounded bg-[#f2eee6] text-stone-700 hover:bg-[#e8dfd2] border border-[#e8dfd2] text-[11px] font-mono">@Nexus_VIP_Mentor (Telegram VIP)</button>
+                    <button type="button" onclick="searchLookupNumber('hr.globalcloud@okaxis')" class="px-2.5 py-1 rounded bg-[#f2eee6] text-stone-700 hover:bg-[#e8dfd2] border border-[#e8dfd2] text-[11px] font-mono">hr.globalcloud@okaxis (Fake UPI)</button>
+                </div>
+
+                <!-- Lookup Results Box -->
+                <div id="lookup-results-box" class="hidden rounded-xl p-5 border space-y-3 transition-all">
+                    <!-- Dynamic Lookup Result -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: CYBER CRIME COMPLAINT GENERATOR ================= -->
+        <section id="tab-complaint" class="tab-section hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#e8dfd2] shadow-sm space-y-5">
+                <div class="border-b border-[#e8dfd2] pb-4">
+                    <h2 class="text-xl font-bold text-stone-900 flex items-center gap-2">
+                        <i data-lucide="file-warning" class="w-5 h-5 text-rose-600"></i>
+                        <span>Official Cyber Crime Complaint Draft Generator</span>
+                    </h2>
+                    <p class="text-xs text-stone-500 mt-1">
+                        If you lost money or shared confidential ID cards with scammers, generate an official, formatted complaint draft ready to submit to the National Cyber Crime Portal (1930 / cybercrime.gov.in / ic3.gov).
+                    </p>
+                </div>
+
+                <form id="complaint-generator-form" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1">Your Full Name <span class="text-rose-500">*</span></label>
+                            <input type="text" id="comp-victim-name" required placeholder="e.g. Ramya Sri" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1">Your Phone / Contact <span class="text-rose-500">*</span></label>
+                            <input type="text" id="comp-victim-phone" required placeholder="e.g. +91 9876543210" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1">Your City / State</label>
+                            <input type="text" id="comp-victim-city" placeholder="e.g. Hyderabad, Telangana" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1">Company / Scammer Name</label>
+                            <input type="text" id="comp-suspect-name" placeholder="e.g. Global Cloud Logistics" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1">Scammer Phone / UPI / Telegram</label>
+                            <input type="text" id="comp-suspect-contact" placeholder="e.g. @HiringManager or UPI: hr@paytm" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1">Financial Loss Amount</label>
+                            <input type="text" id="comp-loss-amount" placeholder="e.g. ₹5,000 or $500" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Incident Summary & Transaction Details <span class="text-rose-500">*</span></label>
+                        <textarea id="comp-incident-desc" rows="4" required placeholder="State how they contacted you, promised job, transaction reference IDs (UTR/Txn ID), and payment mode (GPay, PhonePe, Bank Wire)..." class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl p-3.5 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none leading-relaxed"></textarea>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-6 py-2.5 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white shadow-sm flex items-center gap-2 transition-all">
+                            <i data-lucide="file-text" class="w-4 h-4"></i>
+                            <span>Generate Legal Police Complaint Draft</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Generated Complaint Letter Preview -->
+                <div id="generated-complaint-box" class="hidden rounded-xl p-6 bg-[#f7f4ed] border border-[#e8dfd2] space-y-4 font-mono text-xs text-stone-800">
+                    <div class="flex items-center justify-between border-b border-[#e8dfd2] pb-3 font-sans">
+                        <span class="font-bold text-stone-900 text-sm">Official Complaint Draft Preview</span>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="copyComplaintDraft()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-stone-700 border border-[#e8dfd2] hover:bg-[#f2eee6] transition-all flex items-center gap-1 shadow-xs">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy Text</span>
+                            </button>
+                            <button type="button" onclick="window.print()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-800 text-white hover:bg-amber-900 transition-all flex items-center gap-1 shadow-xs">
+                                <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                                <span>Print / Save PDF</span>
+                            </button>
+                        </div>
+                    </div>
+                    <pre id="complaint-letter-text" class="whitespace-pre-wrap leading-relaxed font-mono bg-white p-4 rounded-xl border border-[#e8dfd2] text-stone-800"></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB: RECRUITER & DOMAIN CHECK ================= -->
+        <section id="tab-recruiter" class="tab-section hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#e8dfd2] shadow-sm space-y-4">
+                <div class="border-b border-[#e8dfd2] pb-4">
+                    <h2 class="text-xl font-bold text-stone-900 flex items-center gap-2">
+                        <i data-lucide="user-check" class="w-5 h-5 text-amber-800"></i>
+                        <span>Recruiter Email & Domain Authenticity Verifier</span>
+                    </h2>
+                    <p class="text-xs text-stone-500 mt-1">
+                        Verify if a recruiter is using a spoofed domain (e.g. `careers-amazon-portal.com` instead of `amazon.com`) or free email service.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Recruiter Email Address <span class="text-rose-500">*</span></label>
+                        <input type="email" id="recruiter-email" placeholder="e.g. hr-google@gmail.com" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Claimed Company</label>
+                        <input type="text" id="recruiter-company" placeholder="e.g. Google LLC" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Company Website Link</label>
+                        <input type="text" id="recruiter-website" placeholder="e.g. google.com" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="button" id="btn-verify-recruiter" class="px-6 py-2.5 rounded-xl text-xs font-bold bg-amber-800 hover:bg-amber-900 text-white shadow-sm flex items-center gap-2 transition-all">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                        <span>Verify Recruiter Identity</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recruiter Results -->
+            <div id="recruiter-results-panel" class="hidden bg-white rounded-2xl p-6 border border-[#e8dfd2] shadow-sm space-y-3">
+                <div class="flex items-center gap-3">
+                    <span id="recruiter-status-badge" class="px-3 py-1 rounded-full text-xs font-bold"></span>
+                </div>
+                <p id="recruiter-eval-desc" class="text-xs text-stone-600 leading-relaxed"></p>
+            </div>
+        </section>
+
+        <!-- ================= TAB: 60s SCAM QUIZ ================= -->
+        <section id="tab-quiz" class="tab-section hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#e8dfd2] shadow-sm space-y-4">
+                <div class="border-b border-[#e8dfd2] pb-4">
+                    <h2 class="text-xl font-bold text-stone-900 flex items-center gap-2">
+                        <i data-lucide="help-circle" class="w-5 h-5 text-amber-800"></i>
+                        <span>60-Second Job Scam Self-Assessment Quiz</span>
+                    </h2>
+                    <p class="text-xs text-stone-500 mt-1">
+                        Answer 5 quick questions about the hiring interaction to instantly determine your risk of being targeted by employment fraud.
+                    </p>
+                </div>
+
+                <div id="quiz-questions-container" class="space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="button" id="btn-eval-quiz" class="px-6 py-2.5 rounded-xl text-xs font-bold bg-amber-800 hover:bg-amber-900 text-white shadow-sm flex items-center gap-2 transition-all">
+                        <i data-lucide="calculator" class="w-4 h-4"></i>
+                        <span>Calculate Scam Risk Score</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Results -->
+            <div id="quiz-results-panel" class="hidden bg-white rounded-2xl p-6 border border-[#e8dfd2] shadow-sm space-y-2">
+                <div id="quiz-score-val" class="text-2xl font-bold"></div>
+                <p id="quiz-summary-text" class="text-xs text-stone-600"></p>
+            </div>
+        </section>
+
+        <!-- ================= TAB 6: SCAM DATABASE ================= -->
+        <section id="tab-scambook" class="tab-section hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#e8dfd2] shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#e8dfd2] pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-stone-900 flex items-center gap-2">
+                            <i data-lucide="shield-ban" class="w-5 h-5 text-amber-800"></i>
+                            <span>Community Scam Blacklist & Database</span>
+                        </h2>
+                        <p class="text-xs text-stone-500 mt-1">
+                            Explore recently reported online job scams, fake companies, and recruiter impersonators.
+                        </p>
+                    </div>
+                    <div class="w-72">
+                        <input type="text" id="scam-search-input" placeholder="Search by company, role, or keyword..." class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3 py-1.5 text-xs text-stone-800 placeholder-stone-400 focus:outline-none focus:border-amber-700">
+                    </div>
+                </div>
+
+                <div id="scam-board-list" class="space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 7: REPORT A SCAM ================= -->
+        <section id="tab-report" class="tab-section hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#e8dfd2] shadow-sm space-y-5">
+                <div class="border-b border-[#e8dfd2] pb-4">
+                    <h2 class="text-xl font-bold text-stone-900 flex items-center gap-2">
+                        <i data-lucide="megaphone" class="w-5 h-5 text-amber-800"></i>
+                        <span data-i18n="nav_report">Report an Online Job Scam</span>
+                    </h2>
+                    <p class="text-xs text-stone-500 mt-1">
+                        Help protect other job seekers by submitting details of suspicious recruiters, fraudulent offer letters, fake tasks, or deposit traps.
+                    </p>
+                </div>
+
+                <form id="report-scam-form" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1">Company / Impersonated Entity Name <span class="text-rose-500">*</span></label>
+                            <input type="text" id="report-company" required placeholder="e.g. Apex Global Tech or Amazon Impersonator" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1">Scam Headline / Job Title <span class="text-rose-500">*</span></label>
+                            <input type="text" id="report-title" required placeholder="e.g. WhatsApp Video Rating Task Deposit Scam" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1">Scammer Contact Handles (Phone, Telegram, UPI, Email)</label>
+                            <input type="text" id="report-contact" placeholder="e.g. @NexusVIP on Telegram, +91 9876543210, hr.pay@upi" class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1">Scam Type Category</label>
+                            <select class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl px-3.5 py-2 text-xs text-stone-800 focus:border-amber-700 focus:outline-none">
+                                <option value="task_crypto">YouTube/Product Rating VIP Crypto Task</option>
+                                <option value="deposit_fee">Upfront Registration / Laptop Insurance Fee</option>
+                                <option value="check_fraud">Counterfeit Cashier Check / Vendor Wire</option>
+                                <option value="phishing">Phishing Login / Credential Theft</option>
+                                <option value="package_mule">Package Reshipping / Money Mule Trap</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Scam Details & Modus Operandi (How it happened) <span class="text-rose-500">*</span></label>
+                        <textarea id="report-details" rows="5" required placeholder="Describe what they promised, which messaging apps they used, payment demands made, and suspicious links..." class="w-full bg-[#f7f4ed] border border-[#e8dfd2] rounded-xl p-3.5 text-xs text-stone-800 placeholder-stone-400 focus:border-amber-700 focus:outline-none leading-relaxed"></textarea>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-6 py-2.5 rounded-xl text-xs font-bold bg-amber-800 hover:bg-amber-900 text-white shadow-sm flex items-center gap-2 transition-all">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Submit Scam Report to Database</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= TAB 8: USER AUDIT HISTORY ================= -->
+        <section id="tab-history" class="tab-section hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#e8dfd2] shadow-sm space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#e8dfd2] pb-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1 flex-wrap">
+                            <h2 class="text-xl font-bold text-stone-900 flex items-center gap-2">
+                                <i data-lucide="clipboard-list" class="w-5 h-5 text-amber-800"></i>
+                                <span data-i18n="nav_history">My Scan & Verification History</span>
+                            </h2>
+                            <span id="history-count-badge" class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-xs font-bold font-mono">0 Tests</span>
+                        </div>
+                        <p class="text-xs text-stone-500">
+                            Here only your real test checks and scan results are saved. You can delete single records or clear all history at any time.
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons: Batch Delete & Clear All -->
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button type="button" id="btn-delete-selected" onclick="deleteSelectedHistory()" class="hidden px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 flex items-center gap-1.5 transition-all cursor-pointer">
+                            <i data-lucide="trash" class="w-3.5 h-3.5"></i>
+                            <span>Delete Selected (<span id="selected-count">0</span>)</span>
+                        </button>
+                        <button type="button" id="btn-clear-history" class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs flex items-center gap-1.5 transition-all cursor-pointer">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            <span>Clear All History</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter & Select All Bar -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                    <!-- Filter Pills -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1 text-xs" id="history-filter-pills">
+                        <button type="button" onclick="filterHistory('all')" class="history-filter-btn active px-3 py-1.5 rounded-lg font-bold bg-amber-800 text-white shadow-xs transition-all cursor-pointer">All Tests</button>
+                        <button type="button" onclick="filterHistory('Job Scan')" class="history-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-[#f2eee6] text-stone-700 hover:bg-[#e8dfd2] transition-all cursor-pointer">Job Scans</button>
+                        <button type="button" onclick="filterHistory('Offer Audit')" class="history-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-[#f2eee6] text-stone-700 hover:bg-[#e8dfd2] transition-all cursor-pointer">Offer Audits</button>
+                        <button type="button" onclick="filterHistory('Phone Lookup')" class="history-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-[#f2eee6] text-stone-700 hover:bg-[#e8dfd2] transition-all cursor-pointer">Phone/UPI Lookups</button>
+                        <button type="button" onclick="filterHistory('Recruiter Check')" class="history-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-[#f2eee6] text-stone-700 hover:bg-[#e8dfd2] transition-all cursor-pointer">Recruiter Checks</button>
+                        <button type="button" onclick="filterHistory('Salary Check')" class="history-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-[#f2eee6] text-stone-700 hover:bg-[#e8dfd2] transition-all cursor-pointer">Salary Checks</button>
+                        <button type="button" onclick="filterHistory('Scam Quiz')" class="history-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-[#f2eee6] text-stone-700 hover:bg-[#e8dfd2] transition-all cursor-pointer">Quiz Results</button>
+                    </div>
+
+                    <!-- Select All Checkbox -->
+                    <div id="history-select-all-wrap" class="hidden items-center gap-2 text-xs font-semibold text-stone-700 shrink-0">
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <input type="checkbox" id="check-select-all-history" onchange="toggleSelectAllHistory(this.checked)" class="w-4 h-4 rounded text-amber-800 accent-amber-800 cursor-pointer">
+                            <span>Select All</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="user-history-list" class="space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= SCAM EVIDENCE DETAILS MODAL ================= -->
+    <div id="scam-details-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-[#e8dfd2] shadow-2xl p-6 sm:p-8 space-y-6 relative text-stone-800">
+            <!-- Close Button -->
+            <button id="btn-close-scam-modal" class="absolute top-5 right-5 p-2 rounded-xl text-stone-400 hover:text-stone-800 hover:bg-[#f2eee6] transition-all">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="flex items-start gap-4 border-b border-[#e8dfd2] pb-5 pr-10">
+                <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                    <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <span id="modal-scam-type" class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase bg-rose-100 text-rose-700"></span>
+                        <span id="modal-report-date" class="text-xs text-stone-500 font-mono"></span>
+                    </div>
+                    <h3 id="modal-scam-title" class="text-xl font-bold text-stone-900 leading-tight"></h3>
+                    <p class="text-xs text-stone-500 mt-1">Impersonated Entity: <span id="modal-company-name" class="text-amber-800 font-semibold font-mono"></span></p>
+                </div>
+            </div>
+
+            <!-- Modal Body 2-Column Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <!-- How the Scam Works -->
+                <div class="bg-[#f7f4ed] rounded-xl p-4 border border-[#e8dfd2] space-y-2">
+                    <h4 class="font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5 text-amber-800">
+                        <i data-lucide="activity" class="w-4 h-4"></i>
+                        <span>Modus Operandi (Scam Operation)</span>
+                    </h4>
+                    <p id="modal-scam-modus" class="text-stone-600 leading-relaxed"></p>
+                </div>
+
+                <!-- Financial / Contact Trap -->
+                <div class="bg-[#f7f4ed] rounded-xl p-4 border border-[#e8dfd2] space-y-3">
+                    <h4 class="font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5 text-rose-700">
+                        <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+                        <span>Financial Loss & Fake Contacts</span>
+                    </h4>
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between bg-white p-2 rounded-lg border border-[#e8dfd2]">
+                            <span class="text-stone-500">Demanded Amount:</span>
+                            <span id="modal-financial-trap" class="text-rose-600 font-bold font-mono"></span>
+                        </div>
+                        <div class="bg-white p-2 rounded-lg border border-[#e8dfd2] space-y-1">
+                            <span class="text-stone-500 block">Fake Contact Handles:</span>
+                            <span id="modal-fake-contact" class="text-amber-900 font-mono block break-all font-medium"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Why is this Fraud / Evidence List -->
+            <div class="bg-[#f7f4ed] rounded-xl p-4 border border-[#e8dfd2] space-y-3">
+                <h4 class="font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5 text-rose-700 text-xs">
+                    <i data-lucide="shield-alert" class="w-4 h-4"></i>
+                    <span>Specific Fraud Indicators & Evidence (ఎందుకు ఫ్రాడ్)</span>
+                </h4>
+                <ul id="modal-evidence-list" class="space-y-2 text-xs">
+                    <!-- Populated dynamically -->
+                </ul>
+            </div>
+
+            <!-- Candidate Protection Advice -->
+            <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-200 space-y-2">
+                <h4 class="font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5 text-xs">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    <span>Candidate Action & Defense Steps</span>
+                </h4>
+                <p id="modal-defense-advice" class="text-xs text-emerald-900 leading-relaxed"></p>
+            </div>
+
+            <!-- Footer Action -->
+            <div class="flex justify-end pt-2">
+                <button type="button" id="btn-close-scam-modal-2" class="px-5 py-2 rounded-xl text-xs font-bold bg-[#f2eee6] hover:bg-[#e8dfd2] text-stone-700 border border-[#e8dfd2] transition-all">
+                    Close Evidence Window
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= SUBSCRIPTION & PRO UPGRADE MODAL ================= -->
+    <div id="subscription-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-y-auto border border-[#e8dfd2] shadow-2xl p-6 sm:p-8 space-y-6 relative text-stone-800">
+            <!-- Close Button -->
+            <button id="btn-close-sub-modal" onclick="closeSubscriptionModal()" class="absolute top-5 right-5 p-2 rounded-xl text-stone-400 hover:text-stone-800 hover:bg-[#f2eee6] transition-all" title="Close">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="text-center space-y-2 pt-2">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-600 via-amber-700 to-amber-900 text-white flex items-center justify-center mx-auto shadow-lg shadow-amber-900/20">
+                    <i data-lucide="crown" class="w-7 h-7 text-yellow-300"></i>
+                </div>
+                <h3 id="sub-modal-title" class="text-2xl font-extrabold text-stone-900 tracking-tight" data-i18n="sub_modal_title">
+                    Unlock Unlimited AI Job Scam Protection
+                </h3>
+                <p id="sub-modal-subtitle" class="text-xs sm:text-sm text-stone-600 max-w-lg mx-auto leading-relaxed" data-i18n="sub_modal_subtitle">
+                    You have used your <strong>2 free AI scam checks</strong>. Subscribe to JobGuard AI Pro to unlock unlimited job scans, offer audits, OCR chat analysis, and legal complaint drafts.
+                </p>
+                <div id="sub-status-alert" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
+                    <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600"></i>
+                    <span data-i18n="sub_limit_reached_tag">Free Check Limit Reached (2 / 2 Used)</span>
+                </div>
+            </div>
+
+            <!-- Plan Selection Options -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Option 1: Monthly -->
+                <div id="plan-card-monthly" onclick="selectSubPlan('monthly')" class="cursor-pointer p-5 rounded-2xl border-2 border-[#e8dfd2] hover:border-amber-700 bg-[#fbf9f5] transition-all space-y-3 relative group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-stone-600" data-i18n="plan_monthly_title">Pro Monthly</span>
+                        <input type="radio" name="sub_plan_choice" value="monthly" class="w-4 h-4 text-amber-800 focus:ring-amber-700 pointer-events-none">
+                    </div>
+                    <div>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-2xl font-black text-stone-900">₹199</span>
+                            <span class="text-xs text-stone-500 font-medium">/ month</span>
+                        </div>
+                        <p class="text-[11px] text-stone-500 mt-0.5">Billed monthly • Cancel anytime</p>
+                    </div>
+                    <ul class="text-[11px] text-stone-600 space-y-1.5 pt-2 border-t border-[#e8dfd2]">
+                        <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> Unlimited AI Job Scans</li>
+                        <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> PDF Offer Letter Audits</li>
+                        <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> Chat Screenshot OCR</li>
+                    </ul>
+                </div>
+
+                <!-- Option 2: Annual (Featured / Best Value) -->
+                <div id="plan-card-annual" onclick="selectSubPlan('annual')" class="cursor-pointer p-5 rounded-2xl border-2 border-amber-800 bg-amber-50/40 transition-all space-y-3 relative group shadow-sm">
+                    <div class="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-700 to-amber-900 text-white text-[10px] font-extrabold uppercase tracking-wider shadow-xs">
+                        ⭐ Best Value (Save 58%)
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-900" data-i18n="plan_yearly_title">Pro Annual</span>
+                        <input type="radio" name="sub_plan_choice" value="annual" checked class="w-4 h-4 text-amber-800 focus:ring-amber-700 pointer-events-none">
+                    </div>
+                    <div>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-2xl font-black text-stone-900">₹999</span>
+                            <span class="text-xs text-stone-500 font-medium">/ year (~₹83/mo)</span>
+                        </div>
+                        <p class="text-[11px] text-amber-900/80 font-medium mt-0.5">Complete 1-Year Candidate Protection</p>
+                    </div>
+                    <ul class="text-[11px] text-stone-700 space-y-1.5 pt-2 border-t border-amber-200">
+                        <li class="flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i> <strong>Everything in Monthly Plan</strong></li>
+                        <li class="flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i> Batch Folder Scanning Support</li>
+                        <li class="flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i> Priority 24/7 Scam Blacklist Radar</li>
+                        <li class="flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i> Cyber Legal Complaint Generator</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Payment Method & Promo Code -->
+            <div class="bg-[#f7f4ed] rounded-2xl p-4 border border-[#e8dfd2] space-y-3 text-xs">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#e8dfd2] pb-2">
+                    <span class="font-bold text-stone-800">Select Payment Option (Instant Activation):</span>
+                    <div class="flex items-center gap-3 text-stone-600 font-medium">
+                        <label class="flex items-center gap-1 cursor-pointer">
+                            <input type="radio" name="pay_method" value="upi" checked class="accent-amber-800">
+                            <span>UPI (GPay/PhonePe/Paytm)</span>
+                        </label>
+                        <label class="flex items-center gap-1 cursor-pointer">
+                            <input type="radio" name="pay_method" value="card" class="accent-amber-800">
+                            <span>Card / NetBanking</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Promo Code -->
+                <div class="flex items-center gap-2">
+                    <input type="text" id="sub-promo-code" placeholder="Promo Code (e.g. JOBGUARD or FREE)" class="flex-1 bg-white border border-[#e8dfd2] rounded-xl px-3 py-1.5 text-xs text-stone-800 placeholder-stone-400 focus:outline-none focus:border-amber-700 uppercase font-mono">
+                    <button type="button" onclick="applyPromoCode()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#e8dfd2] hover:bg-stone-300 text-stone-800 transition-all">
+                        Apply
+                    </button>
+                </div>
+                <div id="promo-status-msg" class="hidden text-[11px] font-semibold"></div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-2">
+                <button type="button" id="btn-subscribe-now" onclick="processSubscriptionPayment()" class="w-full py-3.5 rounded-2xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-amber-800 via-amber-700 to-amber-900 hover:from-amber-900 hover:to-amber-950 text-white shadow-md shadow-amber-900/20 flex items-center justify-center gap-2 transition-all">
+                    <i data-lucide="zap" class="w-4 h-4 text-yellow-300"></i>
+                    <span id="btn-sub-label" data-i18n="btn_subscribe_now">Subscribe Now & Unlock Unlimited Checks (₹999/yr)</span>
+                </button>
+                
+                <div class="flex items-center justify-between pt-2 text-[11px] text-stone-500">
+                    <button type="button" onclick="resetSubscriptionDemo()" class="hover:text-amber-800 hover:underline flex items-center gap-1">
+                        <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                        <span>Reset Free Checks (Testing Demo)</span>
+                    </button>
+                    <span>🔒 256-Bit SSL Encrypted Verification</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-[#e8dfd2] mt-12 py-6 text-center text-xs text-stone-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                <span>JobGuard AI — Dedicated to Protecting Job Seekers Worldwide</span>
+            </div>
+            <p>© 2026 JobGuard AI Platform. Open-Source Community Protection.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/detector_engine.js"></script>
+    <script src="assets/js/sample_jobs.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="aetheris-research-engine",
+    version="1.0.0",
+    packages=find_packages(),
+    install_requires=[
+        "fastapi>=0.110.0",
+        "uvicorn>=0.28.0",
+        "pydantic>=2.6.0",
+        "websockets>=12.0",
+        "numpy>=1.26.0",
+    ],
+    entry_points={
+        "console_scripts": [
+            "aetheris=cli.main:main",
+        ],
+    },
+)

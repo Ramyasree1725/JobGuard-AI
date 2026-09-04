@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aetheris-research-engine"
+version = "1.0.0"
+description = "Autonomous Multi-Agent Simulation, Neural-Symbolic Optimization and Research Prototype Platform"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Proprietary Research License" }
+authors = [
+    { name = "Aetheris Research Labs" }
+]
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.28.0",
+    "pydantic>=2.6.0",
+    "websockets>=12.0",
+    "numpy>=1.26.0"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
