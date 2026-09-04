@@ -1,41 +1,37 @@
 @echo off
+title JobGuard AI - GitHub Push
 echo =======================================================
-echo      JobGuard AI - Automated GitHub Push Helper
+echo      JobGuard AI - Pushing to GitHub (Ramyasree1725)
 echo =======================================================
 echo.
 
 cd /d "%~dp0"
 
-echo [1/4] Adding all files to Git staging...
+echo [1/4] Staging all files...
 git add .
 
-echo [2/4] Committing changes...
-git commit -m "feat: complete full-stack JobGuard AI platform with frontend and backend"
-
-echo [3/4] Ensuring main branch...
-git branch -M main
+echo.
+echo [2/4] Committing code...
+git commit -m "feat: complete full-stack JobGuard AI platform with frontend & backend"
 
 echo.
-git remote get-url origin >nul 2>&1
-if %ERRORLEVEL% EQU 0 (
-    echo Existing remote origin found. Pushing to GitHub...
-    git push -u origin main
-) else (
+echo [3/4] Setting main branch and origin URL...
+git branch -M main
+git remote set-url origin https://github.com/Ramyasree1725/JobGuard-AI.git 2>nul || git remote add origin https://github.com/Ramyasree1725/JobGuard-AI.git
+
+echo.
+echo [4/4] Pushing to https://github.com/Ramyasree1725/JobGuard-AI.git...
+git push -u origin main
+
+if %ERRORLEVEL% NEQ 0 (
     echo.
-    echo Please enter your GitHub Repository URL 
-    echo (Example: https://github.com/YourUsername/jobguard-ai.git):
-    set /p REPO_URL="Repository URL: "
-    if not "%REPO_URL%"=="" (
-        git remote add origin %REPO_URL%
-        echo [4/4] Pushing code to GitHub...
-        git push -u origin main
-    ) else (
-        echo No repository URL provided. Push cancelled.
-    )
+    echo [Retrying with Force Push in case GitHub repository has an existing README]...
+    git push -u origin main --force
 )
 
 echo.
 echo =======================================================
-echo               Operation Completed!
+echo     Done! Check: https://github.com/Ramyasree1725/JobGuard-AI
 echo =======================================================
 pause
+
