@@ -571,3 +571,4 @@ const DetectorEngine = (function () {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = DetectorEngine;
 }
+// JobGuard AI Heuristics NLP v2.5.0 
