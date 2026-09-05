@@ -2558,3 +2558,4 @@ function exportAnalysisReport() {
     window.print();
 }
 
+// JobGuard AI Frontend Suite v2.5.0 
