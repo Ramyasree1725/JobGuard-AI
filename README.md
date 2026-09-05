@@ -92,3 +92,4 @@ research/
 - **Chat-Only Hiring:** Conducting entire interviews exclusively over Telegram or WhatsApp.
 - **Unrealistic Compensation:** Offering $50+/hr for simple data entry, typing, or liking videos.
 - **Free Email Domains:** High-profile corporate recruiters using `@gmail.com` or `@yahoo.com`.
+# JobGuard AI Dev Integration Branch 
